@@ -24,6 +24,7 @@ The process of applying for jobs and internships is not a cakewalk. Managing job
 Our application keeps track of the jobs you've added to your wish list. It also keeps track of the companies you've already applied to and keeps a list of any rejections. Rather than having the user browse each company's site for potential prospects, our application allows the applicant to search for them directly using basic keywords. Any prospective work offers can then be added to the applicant's wishlist.
 
 
+
 ## New Features
 🎥[Demo Video](https://youtu.be/TW7JNjXxD-Q)
 
@@ -44,9 +45,6 @@ Develop and deploy a scalable system to expand job data coverage by integrating 
 ### 4. LinkedIn and GitHub Integration
 
 Integrate LinkedIn and GitHub to enhance the platform's functionality by enabling recruiters to directly access and filter applicant profiles based on their skills, projects, and professional experience. For users, this integration simplifies linking their LinkedIn profiles and GitHub repositories to strengthen their applications by showcasing relevant qualifications, certifications, and project portfolios. This feature creates a seamless connection between job seekers and recruiters, improving the hiring process and enhancing the overall user 
-
-## Summary
-The project aims to build a robust recruitment platform through four strategic milestones. It begins with developing a **Recruiter Dashboard** for managing job postings, ensuring streamlined job creation and visibility. Next, it introduces a **Candidate Application Portal** to create a seamless interface for job seekers to browse and apply for jobs efficiently. The platform will then expand its **Job Data Coverage** by integrating multiple APIs to provide diverse and relevant opportunities while ensuring real-time updates and scalability. Finally, **LinkedIn and GitHub Integration** will enhance functionality by enabling direct access to applicant profiles and portfolios, fostering better matches between candidates and recruiters. This comprehensive approach ensures an engaging, efficient, and data-rich recruitment experience for all users.
 
 ---
 
