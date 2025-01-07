@@ -5,6 +5,8 @@ import ExperienceLevelModal from './CustomModal';
 import JobModeModal from './CustomModal';
 import ProfileModal from './CustomProfileModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLinkedin } from '@fortawesome/free-brands-svg-icons';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { CONSTANTS } from '../data/Constants';
 import {
 	faEnvelope,
@@ -21,6 +23,7 @@ const ProfilePage = (props) => {
 	const [jobModeModalOpen, setJobModeModalOpen] = useState(false);
 
 	const profile = props.profile;
+	console.log("This is the profile",profile);
 	/**
 	 * Given a full name string, the method returns initials or the abbreviated name of the user profile in terms of initial letters of the first and last word of the full name
 	 * @param {String} fullName This string is the full name of the user
@@ -96,6 +99,32 @@ const ProfilePage = (props) => {
 										: ''}
 								</span>
 							</div>
+							<div className="col-12 d-flex align-items-center">
+								<FontAwesomeIcon icon={faLinkedin} size="1x" />
+								<a
+									className="linkedin-id"
+									href={profile[CONSTANTS.PROFILE.LINKEDIN_ID]}
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									{profile[CONSTANTS.PROFILE.LINKEDIN_ID]
+									? profile[CONSTANTS.PROFILE.LINKEDIN_ID]
+									: ''}
+								</a>
+							</div>
+							<div className="col-12 d-flex align-items-center">
+								<FontAwesomeIcon icon={faGithub} size="1x" />
+								<a
+									className="linkedin-id"
+									href={profile[CONSTANTS.PROFILE.GITHUB_ID]}
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									{profile[CONSTANTS.PROFILE.GITHUB_ID]
+									? profile[CONSTANTS.PROFILE.GITHUB_ID]
+									: ''}
+								</a>
+							</div>
 							<div className='col-12 d-flex align-items-center'>
 								<FontAwesomeIcon icon={faPhone} size='1x' />
 								<span className='mx-2'>
@@ -170,7 +199,7 @@ const ProfilePage = (props) => {
 								/>
 							</div>
 							<div className='d-flex flex-wrap'>
-								{profile[CONSTANTS.PROFILE.EXPERIENCE_LEVEL]?.map((ele, index) => (
+								{profile.job_levels?.map((ele, index) => (
 									<span
 										className='badge rounded-pill m-1 py-2 px-3'
 										style={{

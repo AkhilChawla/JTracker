@@ -22,8 +22,9 @@ const Recommendations = () => {
 
 	const fetchRecommendations = async () => {
 		try {
+			console.log("11111111111")
 			setIsFetchingJobs(true);
-			const response = await fetch('http://localhost:5000/getRecommendations', {
+			const response = await fetch('http://localhost:5002/swe-lists', {
 				headers: {
 					Authorization: 'Bearer ' + localStorage.getItem('token'),
 					'Access-Control-Allow-Origin': 'http://localhost:3000',
@@ -40,6 +41,7 @@ const Recommendations = () => {
 				setRecommendedJobs(data);
 			}
 		} catch (error) {
+			console.log("error:", error)
 			setFetchError(error.message);
 		} finally {
 			setIsFetchingJobs(false);
@@ -48,9 +50,9 @@ const Recommendations = () => {
 
 	return (
 		<div>
-			<h2 class='d-flex justify-content-center my-5'>Recommended Jobs</h2>
+			<h2 className='d-flex justify-content-center my-5'>Recommended Jobs</h2>
 			<table
-				classname='table my-4'
+				className='table my-4'
 				style={{
 					boxShadow: '0px 5px 12px 0px rgba(0,0,0,0.1)',
 					marginTop: 30,

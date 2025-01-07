@@ -4,6 +4,7 @@ import '@fortawesome/fontawesome-free/css/fontawesome.css'
 import '@fortawesome/fontawesome-free/js/solid'
 import '@fortawesome/fontawesome-free/js/regular'
 import '@fortawesome/fontawesome-free/js/brands'
+import EnableExtensionButton from '../extensionButton/Extension'
 
 import '../static/Sidebar.css'
 export default class Sidebar extends Component {
@@ -15,9 +16,17 @@ export default class Sidebar extends Component {
             <i class="fas fa-search left-nav-icon"></i>
             <span class="left-nav-label">Search</span>
           </div>
+          <div onClick={() => this.props.switchPage('ExtensionPage')}>
+            <i class="fas fa-file left-nav-icon"></i>
+            <span class="left-nav-label">Extension details</span>
+          </div>
+          <div onClick={() => this.props.switchPage('DirectJobListingPage')}>
+            <i class="fas fa-list left-nav-icon"></i>
+            <span class="left-nav-label">Direct Job Listings</span>
+          </div>
           <div onClick={() => this.props.switchPage('ManageResumePage')}>
             <i class="fas fa-folder left-nav-icon"></i>
-            <span class="left-nav-label">Manage</span>
+            <span class="left-nav-label">Manage Resume</span>
           </div>
           <div onClick={() => this.props.switchPage('MatchesPage')}>
             <i class="fas fa-check-double left-nav-icon"></i>
@@ -35,6 +44,7 @@ export default class Sidebar extends Component {
             <i class="fas fa-sign-out-alt left-nav-icon"></i>
             <span class="left-nav-label">LogOut</span>
           </div>
+          <EnableExtensionButton/>
         </div>
       </div>
     )

@@ -15,14 +15,14 @@ const CustomProfileModal = (props) => {
 		} else {
 			axios
 				.post(
-					'http://localhost:5000/updateProfile',
+					'http://localhost:5001/profile',
 					{
 						...data
 					},
 					{
 						headers: {
-							userid: profile.id,
-							Authorization: `Bearer ${localStorage.getItem('userId')}`
+							userid: localStorage.getItem('userId'),
+							Authorization: `Bearer ${localStorage.getItem('token')}`
 						}
 					}
 				)
@@ -92,6 +92,34 @@ const CustomProfileModal = (props) => {
 							value={data[CONSTANTS.PROFILE.EMAIL]}
 							onChange={(e) =>
 								setData({ ...data, [CONSTANTS.PROFILE.EMAIL]: e.target.value })
+							}
+						/>
+					</Form.Group>
+					<Form.Group className="my-3">
+						<Form.Label>LinkedIn ID</Form.Label>
+						<Form.Control
+							type="text"
+							placeholder="Enter LinkedIn ID"
+							value={data[CONSTANTS.PROFILE.LINKEDIN_ID]}
+							onChange={(e) =>
+								setData({
+									...data,
+									[CONSTANTS.PROFILE.LINKEDIN_ID]: e.target.value
+								})
+							}
+						/>
+					</Form.Group>
+					<Form.Group className="my-3">
+						<Form.Label>Github ID</Form.Label>
+						<Form.Control
+							type="text"
+							placeholder="Enter Github ID"
+							value={data[CONSTANTS.PROFILE.GITHUB_ID]}
+							onChange={(e) =>
+								setData({
+									...data,
+									[CONSTANTS.PROFILE.GITHUB_ID]: e.target.value
+								})
 							}
 						/>
 					</Form.Group>

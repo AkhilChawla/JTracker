@@ -7,10 +7,9 @@ from datetime import datetime, timedelta
 import hashlib
 import uuid
 import random
-from flask import Flask, jsonify, request, send_file, redirect, url_for, session
+from flask import Flask, jsonify, request, send_file, redirect, url_for, session, make_response
 from flask_mongoengine import MongoEngine
 from flask_cors import CORS, cross_origin
-
 from bs4 import BeautifulSoup
 
 from fake_useragent import UserAgent
@@ -39,20 +38,20 @@ def create_app():
     :return: Flask object
     """
     app = Flask(__name__)
-    # # make flask support CORS
-    CORS(app)
+    # Enable CORS for all routes, specifically allowing localhost:3000
+    CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
     # get all the variables from the application.yml file
-    with open("application.yml") as f:
-        info = yaml.load(f, Loader=yaml.FullLoader)
-        GOOGLE_CLIENT_ID = info["GOOGLE_CLIENT_ID"]
-        GOOGLE_CLIENT_SECRET = info["GOOGLE_CLIENT_SECRET"]
-        CONF_URL = info["CONF_URL"]
-        app.secret_key = info['SECRET_KEY']
+    # with open("application.yml") as f:
+    #     info = yaml.load(f, Loader=yaml.FullLoader)
+    #     GOOGLE_CLIENT_ID = info["GOOGLE_CLIENT_ID"]
+    #     GOOGLE_CLIENT_SECRET = info["GOOGLE_CLIENT_SECRET"]
+    #     CONF_URL = info["CONF_URL"]
+    #     app.secret_key = info['SECRET_KEY']
 
-    app.config["CORS_HEADERS"] = "Content-Type"
+    # app.config["CORS_HEADERS"] = "Content-Type"
 
-    oauth = OAuth(app)
+    # oauth = OAuth(app)
 
     @app.errorhandler(404)
     def page_not_found():
@@ -195,6 +194,7 @@ def create_app():
                     id=get_new_user_id(),
                     fullName=full_name,
                     email=users_email,
+                    linkedinId="",
                     authTokens=[],
                     applications=[],
                     skills=[],
@@ -218,13 +218,11 @@ def create_app():
 
         return redirect(f"http://127.0.0.1:3000/?token={token_whole}&expiry={expiry_str}&userId={unique_id}")
 
-    @app.route("/users/signup", methods=["POST"])
+    @app.route("/users/signup", methods=["POST", "OPTIONS"])
     def sign_up():
-        """
-        Creates a new user profile and adds the user to the database and returns the message
-
-        :return: JSON object
-        """
+        if request.method == "OPTIONS":
+            return _build_cors_preflight_response()
+        
         try:
             # print(request.data)
             data = json.loads(request.data)
@@ -254,13 +252,15 @@ def create_app():
                 phone_number="",
                 address="",
                 institution="",
-                email=""
+                email="",
+                linkedinId=""
             )
-            user.save()
+            # user.save()
             # del user.to_json()["password", "authTokens"]
             return jsonify(user.to_json()), 200
-        except:
-            return jsonify({"error": "Internal server error"}), 500
+        except Exception as e:
+            print(e)
+            return _corsify_actual_response(jsonify({"error": "Internal server error"})), 500
 
     @app.route("/getProfile", methods=["GET"])
     def get_profile_data():
@@ -280,11 +280,12 @@ def create_app():
             profileInformation["phone_number"] = user["phone_number"]
             profileInformation["address"] = user["address"]
             profileInformation["email"] = user["email"]
+            profileInformation["linkedinId"]: user["linkedinId"]
             profileInformation["fullName"] = user["fullName"]
 
             return jsonify(profileInformation)
         except:
-            return jsonify({"error": "Internal server error"}), 500
+            return jsonify({"error": "Internal server error, cannot get profile data"}), 500
 
     @app.route("/updateProfile", methods=["POST"])
     def updateProfilePreferences():
@@ -305,7 +306,7 @@ def create_app():
 
         except Exception as err:
             print(err)
-            return jsonify({"error": "Internal server error"}), 500
+            return jsonify({"error": "Internal server error, cannot update profile data"}), 500
 
     @app.route("/getRecommendations", methods=["GET"])
     def getRecommendations():
@@ -399,7 +400,8 @@ def create_app():
                 "address": user.address,
                 "locations": user.locations,
                 "jobLevels": user.job_levels,
-                "email": user.email
+                "email": user.email,
+                "linkedinId":user.linkedinId
             }
             return jsonify({"profile": profileInfo, "token": token, "expiry": expiry_str})
         except:
@@ -682,6 +684,23 @@ def create_app():
         except:
             return jsonify({"error": "Internal server error"}), 500
 
+    @app.after_request
+    def after_request(response):
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
+
+    def _build_cors_preflight_response():
+        response = make_response()
+        response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
+        response.headers.add('Access-Control-Allow-Headers', "Content-Type,Authorization")
+        response.headers.add('Access-Control-Allow-Methods', "GET,PUT,POST,DELETE,OPTIONS")
+        return response
+
+    def _corsify_actual_response(response):
+        response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
+        return response
+
     return app
 
 
@@ -689,14 +708,12 @@ app = create_app()
 
 
 with open("application.yml") as f:
-    info = yaml.load(f, Loader=yaml.FullLoader)
-    username = info["USERNAME"]
-    password = info["PASSWORD"]
-    cluster_url = info["CLUSTER_URL"]
+    info = yaml.safe_load(f)  
+    mongodb_uri = info["MONGODB_URI"]
     # ca=certifi.where()
     app.config["MONGODB_SETTINGS"] = {
         "db": "appTracker",
-        "host": f"mongodb+srv://{username}:{password}@{cluster_url}/",
+        "host": "mongodb_uri",
     }
 db = MongoEngine()
 db.init_app(app)
@@ -713,6 +730,7 @@ class Users(db.Document):
     password = db.StringField()
     authTokens = db.ListField()
     email = db.StringField()
+    linkedinId = db.StringField()
     applications = db.ListField()
     resume = db.FileField()
     skills = db.ListField()
@@ -728,7 +746,7 @@ class Users(db.Document):
 
         :return: JSON object
         """
-        return {"id": self.id, "fullName": self.fullName, "username": self.username}
+        return {"id": self.id, "fullName": self.fullName, "username": self.username, "linkedinId":self.linkedinId}
 
 
 def get_new_user_id():
@@ -778,4 +796,5 @@ def get_new_application_id(user_id):
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5002)
+

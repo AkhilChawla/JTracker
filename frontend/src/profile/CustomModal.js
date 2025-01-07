@@ -12,14 +12,14 @@ const CustomModal = (props) => {
 		console.log({ [name]: data });
 		axios
 			.post(
-				'http://localhost:5000/updateProfile',
+				'http://localhost:5001/profile',
 				{
 					[name]: data
 				},
 				{
 					headers: {
 						userid: localStorage.getItem('userId'),
-						Authorization: `Bearer ${localStorage.getItem('userId')}`
+						Authorization: `Bearer ${localStorage.getItem('token')}`
 					}
 				}
 			)
